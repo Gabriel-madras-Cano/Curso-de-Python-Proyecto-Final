@@ -1,4 +1,4 @@
-'''Author: Gerardo Gabriel Aquino Cano... Curso de Python - 29/06/2026 - Conexión a la base de datos '''
+'''Author: Gerardo Gabriel Aquino Cano... Curso de Python - 29/06/2026 - Conexión, carga de datos y actualización de resgistros a la base de datos '''
 
 import sqlite3 #Importa la librería sqlite3 para trabajar con bases de datos SQLite...
 
@@ -71,17 +71,65 @@ def eliminar_registro_de_la_tabla(): #Función para eliminar registros de la tab
     conexion.commit()
     conexion.close()
 
-def actualizar_productos(): #Funcion que agrega o actualiza datos sobre un producto seleccionado
+def actualizar_registro_db(id, precio=None, cantidad=None, categoria=None, descripcion= None): #Funcion que agrega o actualiza datos sobre un producto seleccionado
     conexion = sqlite3.connect("productos.db")
-    cursor = conexion.cursor()
-    id_buscar = input("Ingrese el ID del producto que quiera actualizar sus datos: ") #Pedimos al usuario que ingrese el ID del producto que desea buscar...
-    cursor.execute("SELECT * FROM productos WHERE id = ?", (id_buscar,))
-    registro = cursor.fetchone()
-    if registro:
-        print(f"\n ID: {registro[0]}, Nombre: {registro[1]} \n Categoría: {registro[2]} \n Precio: {registro[3]} \n Descripción: {registro[4]} \n Cantidad: {registro[5]}\n ")
-    else:
-        print(f"\n {'-'*10} [ERROR!] El producto con el ID {id_buscar} no existe. {'-'*10} \n")
+
     conexion.close()
 
 crear_conexion() #Si la función establece conexión con la base de datos, se imprime un mensaje indicando que la base de datos se ha creado con éxito.
 crear_tabla() #Si la función crea la tabla en la base de datos, se imprime un mensaje indicando que el registro de productos se ha creado con éxito.
+
+'''
+
+import sqlite3
+
+def actualizar_producto(id_producto, precio=None, cantidad=None, categoria=None):
+    # 1. Conectarse a la base de datos
+    conexion = sqlite3.connect('inventario.db')
+    cursor = conexion.cursor()
+    
+    # 2. Listas para armar la consulta sobre la marcha
+    campos_a_actualizar = []
+    valores = []
+    
+    # 3. Verificar qué datos se enviaron
+    if precio is not None:
+        campos_a_actualizar.append("precio = ?")
+        valores.append(precio)
+        
+    if cantidad is not None:
+        campos_a_actualizar.append("cantidad = ?")
+        valores.append(cantidad)
+        
+    if categoria is not None:
+        campos_a_actualizar.append("categoria = ?")
+        valores.append(categoria)
+        
+    # 4. Si no se pasó ningún cambio, salir de la función
+    if not campos_a_actualizar:
+        print("No se especificaron cambios.")
+        conexion.close()
+        return
+
+    # 5. Unir los campos y agregar el ID al final para el WHERE
+    sql_query = f"UPDATE productos SET {', '.join(campos_a_actualizar)} WHERE id = ?"
+    valores.append(id_producto)
+    
+    # 6. Ejecutar y confirmar
+    cursor.execute(sql_query, valores)
+    conexion.commit()
+    
+    print(f"Producto ID {id_producto} actualizado con éxito.")
+    
+    cursor.close()
+    conexion.close()
+
+# --- EJEMPLOS DE USO ---
+# Modificar solo el precio
+actualizar_producto(id_producto=5, precio=1500.50)
+
+# Modificar cantidad y categoría al mismo tiempo
+actualizar_producto(id_producto=5, cantidad=20, categoria="Electrónica")
+
+
+'''

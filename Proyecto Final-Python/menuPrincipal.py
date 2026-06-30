@@ -35,11 +35,23 @@ def eliminar_producto(): #Esta es una función de verificación y eliminación d
     else: #Si no hay registros, mostramos un mensaje de error.
         print(f"\n {'-'*10} [ERROR!] No hay productos registrados. {'-'*10} \n")
 
-def actualizar_producto(): #El usuario actualiza los datos del producto registrado usando esta función.
-    if db.hay_registros(): #Verificamos si hay registros en la base de datos.
-        print(f"\t\n {'='*15} Que producto desea modificar sus datos? {'='*15}\n")
-    else: #Si no hay registros, mostramos un mensaje de error.
-        print(f"\n {'-'*10} [ERROR!] No hay productos registrados. {'-'*10} \n")
+def actualizar_productos(): #El usuario actualiza los datos del producto registrado usando esta función.
+    while True:
+        if db.hay_registros(): #Verificamos si hay registros en la base de datos.
+            id_producto= input(f"\t\n {'='*15} Que producto desea actualizar sus datos? {'='*15}\n")
+            nombre=""
+            precio=0
+            cantidad=0
+            categoria="0"
+            descripcion="0"
+            ut.procesar_actualizacion(nombre, precio, cantidad, categoria, descripcion)
+            db.actualizar_registro_db(id_producto, precio, cantidad, categoria, descripcion)
+        else: #Si no hay registros, mostramos un mensaje de error.
+            print(f"\n {'-'*10} [ERROR!] No hay productos registrados. {'-'*10} \n")
+            break
+        preguntar= input("\nDesea realizar otros cambios? (S/N): ").lower
+        if preguntar != "s":
+            break
 
 def menu(): #Menú principal donde se maneja la información y los registros de los productos...
     while True:
@@ -49,9 +61,8 @@ def menu(): #Menú principal donde se maneja la información y los registros de 
         print("3. Buscar producto por ID.\n")
         print("4. Eliminar producto.\n")
         print("5. Actualizar datos de un producto.\n")
-        print("6. Verificar cantidad de un producto registrado.\n")
         print("7. Cerrar Programa.\n")
-        opcion = input("Ingrese una opción para continuar:  \t")
+        opcion = input("Ingrese una opción para continuar:  ")
         match opcion:
             case "1":
                 print(f"\t\n {'='*20} Registro de productos {'='*20}\n")
@@ -63,10 +74,8 @@ def menu(): #Menú principal donde se maneja la información y los registros de 
             case "4":
                 eliminar_producto()#Invocamos a la función para eliminar un registro de la tabla.
             case "5":
-                actualizar_producto()
+                actualizar_productos()
             case "6":
-                print("Pendiente...")
-            case "7":
                 print(f"\t\n {'='*20} Cerrando Programa. Que tenga un buen día!! {'='*20}\n")
                 break
             case _: #Caso por defecto, volvemos al menú principal si el usuario ingresa una opción inválida.
